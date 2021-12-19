@@ -16,15 +16,15 @@ class Tablero {
   /**
    * Representación lógica del tablero. El valor númerico representa:
    * 0 = casilla vacia
-   * 1 = casilla con ficha del agente
-   * -1 = casilla con ficha del oponente
+   * 1 = casilla con ficha del primer jugador
+   * 2 = casilla con ficha del segundo jugador
    */
   int[][] mundo;
-  Nodo mundoNodo = new Nodo("mundo",8);
+
   /**
    * Representa de quién es el turno bajo la siguiente convención:
-   * true = turno del agente 1
-   * false = turno del oponente -1
+   * true = turno del jugador 1
+   * false = turno del jugador 2
    */
   boolean turno;
   
@@ -53,13 +53,8 @@ class Tablero {
     // Configuración inicial (colocar 4 fichas al centro del tablero):
     mundo[(dimension/2)-1][dimension/2] = 1;
     mundo[dimension/2][(dimension/2)-1] = 1;
-    mundo[(dimension/2)-1][(dimension/2)-1] = -1;
-    mundo[dimension/2][dimension/2] = -1;
-    
-    mundoNodo.estado[(dimension/2)-1][dimension/2] = 1;
-    mundoNodo.estado[dimension/2][(dimension/2)-1] = 1;
-    mundoNodo.estado[(dimension/2)-1][(dimension/2)-1] = -1;
-    mundoNodo.estado[dimension/2][dimension/2] = -1;
+    mundo[(dimension/2)-1][(dimension/2)-1] = 2;
+    mundo[dimension/2][dimension/2] = 2;
   }
 
   /**
@@ -69,24 +64,11 @@ class Tablero {
   Tablero() {
     this(8, 60);
   }
-  
-    Tablero(Nodo n) {
-    this(8, 60);
-    int i,j;
-     for(i=0;i<8;i++)
-     {
-        for(j=0;j<8;j++)
-        {
-          this.mundo[i][j] = n.estado[i][j];
-        }
-     }
-  }
 
   /**
    * Dibuja en pantalla el tablero, es decir, dibuja las casillas y las fichas de los jugadores
    */
   void display() {
-    
     color fondo = color(125, 0, 0); // El color de fondo del tablero
     color linea = color(200,0,0); // El color de línea del tablero
     int grosor = 5; // Ancho de línea (en pixeles)
@@ -94,7 +76,7 @@ class Tablero {
     color jugador2 = color(255); // Color de ficha para el segundo jugador
     color jugada = color(200,200,200,100); // Color de ficha para posible jugada
     
-    
+    // Doble iteración para recorrer cada casilla del tablero
     for (int i = 0; i < dimension; i++)
       for (int j = 0; j < dimension; j++) {
         // Dibujar cada casilla del tablero:
@@ -105,7 +87,7 @@ class Tablero {
 
         // Dibujar las fichas de los jugadores:
         if (mundo[i][j] != 0) { // en caso de que la casilla no esté vacia
-          fill(mundo[i][j] == 1 ? jugador1 : jugador2); // establecer el color de la ficha
+          fill(mundo[i][j] == 1 ? jugador1 : (mundo[i][j] == 2 ? jugador2 : jugada)); // establecer el color de la ficha
           noStroke(); // quitar contorno de línea
           ellipse(i*tamCasilla+(tamCasilla/2), j*tamCasilla+(tamCasilla/2), tamCasilla*4/5, tamCasilla*4/5);
         }
@@ -139,63 +121,7 @@ class Tablero {
       mensaje = s;
       mensaje2 = t;
   }
-  
-  
-  /**
-   * Representa el cambio de turno. Normalmente representa la última acción del turno
-   */
-  void cambiarTurno() {
-    turno = !turno;
-    numeroDeTurno += 1;
-  }
 
-
-
-  /**
-   * Verifica si en la posición de una casilla dada existe una ficha (sin importar su color)
-   * @param posX Coordenada horizontal de la casilla a verificar
-   * @param posY Coordenada vertical de la casilla a verificar
-   * @return True si hay una ficha de cualquier color en la casilla, false en otro caso
-   */
-  boolean estaOcupado(int posX, int posY) {
-    return (mundo[posX][posY] != 0);
-  }
-  
-  boolean esJugable(int posX, int posY) {
-    
-    //buscar en la lista de jugadas
-    PVector jugadas[] = tablero.jugadasPosibles();
-    int i = 0;
-    juegosPosibles = floor(jugadas[0].x);
-    for(i = 1; i < juegosPosibles; i ++)
-    {
-       if(jugadas[i].x == posX && jugadas[i].y == posY)
-         return true;
-    }
-    return false;
-  }
-  
-
-
-  /**
-   * Cuenta la cantidad de fichas de un jugador
-   * @return La cantidad de fichas de ambos jugadores en el tablero como vector, 
-   * donde x = jugador1, y = jugador2
-   */
-  PVector cantidadFichas() {
-    PVector contador = new PVector();
-    for (int i = 0; i < dimension; i++)
-      for (int j = 0; j < dimension; j++){
-        if(mundo[i][j] == 1)
-          contador.x += 1;
-        if(mundo[i][j] == -1)
-          contador.y += 1;
-      }
-    return contador;
-  }
-  
-  
-  
   /**
    * Coloca o establece una ficha en una casilla específica del tablero.
    * Nota: El eje vertical está invertido y el conteo empieza en cero.
@@ -204,10 +130,12 @@ class Tablero {
    * @param turno Representa el turno o color de ficha a establecer
    */
   void setFicha(int posX, int posY, boolean turno) {
-    mundo[posX][posY] = turno ? 1 : -1;
-    mundoNodo.estado[posX][posY] = turno ? 1 : -1;
+    mundo[posX][posY] = turno ? 1 : 2;
   }
   
+  void setJugada(int posX, int posY) {
+    mundo[posX][posY] = 3;
+  }
   
   /**
    * Coloca o establece una ficha en una casilla específica del tablero segun el turno del tablero.
@@ -238,12 +166,51 @@ class Tablero {
     }
   }
 
+  /**
+   * Representa el cambio de turno. Normalmente representa la última acción del turno
+   */
+  void cambiarTurno() {
+    turno = !turno;
+    numeroDeTurno += 1;
+  }
+
+  /**
+   * Verifica si en la posición de una casilla dada existe una ficha (sin importar su color)
+   * @param posX Coordenada horizontal de la casilla a verificar
+   * @param posY Coordenada vertical de la casilla a verificar
+   * @return True si hay una ficha de cualquier color en la casilla, false en otro caso
+   */
+  boolean estaOcupado(int posX, int posY) {
+    return (mundo[posX][posY] != 0 && mundo[posX][posY] != 3);
+  }
+  
+  boolean esJugable(int posX, int posY) {
+    return mundo[posX][posY] == 3;
+  }
+
+  /**
+   * Cuenta la cantidad de fichas de un jugador
+   * @return La cantidad de fichas de ambos jugadores en el tablero como vector, 
+   * donde x = jugador1, y = jugador2
+   */
+  PVector cantidadFichas() {
+    PVector contador = new PVector();
+    for (int i = 0; i < dimension; i++)
+      for (int j = 0; j < dimension; j++){
+        if(mundo[i][j] == 1)
+          contador.x += 1;
+        if(mundo[i][j] == 2)
+          contador.y += 1;
+      }
+    return contador;
+  }
+  
   
   int encierraEnemigo(int posX, int posY, int dx, int dy)
   {
     int d = 1;
-    int jugador = (this.turno ? 1 : -1);
-    int fichaBuscar = -jugador;
+    int jugador = (turno ? 1 : 2);
+    int fichaBuscar = (turno ? 2 : 1);
       
     while(posX+dx*d < 8 && posX+dx*d >= 0 && posY+dy*d < 8 && posY+dy*d >= 0 && (mundo[posX+dx*d][posY+dy*d++] == fichaBuscar))
     {
@@ -254,22 +221,21 @@ class Tablero {
     return 0;
   }
   
-  boolean jugadaConsiderada(PVector[] J, PVector j,int p)
-  {
-    int i = 0;
-    for(i  = 1; i < p; i++)
-    {
-      if(J[i].x == j.x && J[i].y == j.y)
-        return true;
-    }
-    return false;
-  }
-  
   PVector[] jugadasPosibles()
   {
       PVector jugadas[] = new PVector[60];
-      jugadas[0] = new PVector(1,0);
       int i,j,p = 1;
+      int jugador = (turno ? 1 : 2);
+      int fichaBuscar = (turno ? 2 : 1);
+      
+      //Borramos juagdas posibles anteriores
+      for(i=0;i<8;i++)
+      {
+         for(j=0;j<8;j++)
+         {
+           mundo[i][j] = (mundo[i][j] == 3 ? 0 : mundo[i][j]);
+         }
+      }
       
       for(i=0;i<8;i++)
       {
@@ -285,7 +251,7 @@ class Tablero {
                   if(h == 0 && k == 0)
                       continue;
                   
-                  if(encierraEnemigo(i,j,h,k) > 0 && !jugadaConsiderada(jugadas,new PVector(i,j),p))
+                  if(encierraEnemigo(i,j,h,k) > 0)
                   {
                     jugadas[p] = new PVector();
                     jugadas[p].x = i;
@@ -307,7 +273,7 @@ class Tablero {
   
   void muestraJugadas()
   {
-    PVector jugadas[] = jugadasPosibles();
+    PVector jugadas[] = tablero.jugadasPosibles();
     int i = 0;
     juegosPosibles = floor(jugadas[0].x);
     for(i = 1; i < juegosPosibles; i ++)
@@ -315,35 +281,11 @@ class Tablero {
         int cx,cy;
         cx =  floor(jugadas[i].x);
         cy =  floor(jugadas[i].y);
-        fill(color(200,200,200,100));
-        noStroke(); // quitar contorno de línea
-        ellipse(cx*tamCasilla+(tamCasilla/2), cy*tamCasilla+(tamCasilla/2), tamCasilla*4/5, tamCasilla*4/5);
+        tablero.setJugada(cx, cy);
     }
   }
   
-  
-  boolean sinMovimientos()
-  {
-    if(jugadasPosibles()[0].x == 1)
-    {
-      return true;
-    }
-    return false;
-  }
-  
-  boolean finPartida()
-  {
-    if(sinMovimientos())
-    {
-      cambiarTurno();
-      return sinMovimientos();
-    }
-    return false;
-  }
-  
-  
-  
-  void terminaPartida()
+  void finPartida()
   {
      finJuego = true; 
     
@@ -357,22 +299,15 @@ class Tablero {
     for(i=0;i<8;i++)
     {
        for(j=0;j<8;j++)
-       {  
-         mundo[i][j] = 0;
-         mundoNodo.estado[i][j] = 0;
+       {
+         mundo[i][j] = mundo[i][j] = 0;
        }
     }
     
     mundo[(dimension/2)-1][dimension/2] = 1;
     mundo[dimension/2][(dimension/2)-1] = 1;
-    mundo[(dimension/2)-1][(dimension/2)-1] = -1;
-    mundo[dimension/2][dimension/2] = -1;
-    
-    
-    mundoNodo.estado[(dimension/2)-1][dimension/2] = 1;
-    mundoNodo.estado[dimension/2][(dimension/2)-1] = 1;
-    mundoNodo.estado[(dimension/2)-1][(dimension/2)-1] = -1;
-    mundoNodo.estado[dimension/2][dimension/2] = -1;
+    mundo[(dimension/2)-1][(dimension/2)-1] = 2;
+    mundo[dimension/2][dimension/2] = 2;
     
    turno = true;
    numeroDeTurno = 0;

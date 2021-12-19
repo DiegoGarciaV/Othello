@@ -27,7 +27,6 @@ void setup(){
 void draw(){
   
   tablero.display();
-  tablero.muestraJugadas();
   
 }
 
@@ -50,18 +49,23 @@ void mousePressed() {
       tablero.muestraJugadas();
       tablero.mensaje("Turno " + tablero.numeroDeTurno + "   "  + (tablero.turno ? " jugó ficha blanca" : "jugó ficha negra"));
       
-      if(tablero.sinMovimientos())
+      if(tablero.juegosPosibles == 1)
       {
         
-        if(tablero.finPartida())
+        tablero.cambiarTurno();
+        tablero.muestraJugadas();
+        tablero.mensaje((tablero.juegosPosibles - 1) + " jugadas posibles, turno para el siguiente jugador.");
+        if(tablero.juegosPosibles == 1)
         {
           tablero.mensajes("Fin de la partida, " + (tablero.cantidadFichas().x > tablero.cantidadFichas().y ? " ganan Negras" : (tablero.cantidadFichas().x < tablero.cantidadFichas().y ? "ganan Blancas" : "empate")),"       Volver a jugar      ");
-          tablero.terminaPartida();
+          tablero.finPartida();
+          
         }
         else
         {
           tablero.mensajes("Sin jugadas posibles","Turno para el siguiente jugador.");
         }
+        
        
       }
       
