@@ -72,12 +72,15 @@ class Tablero {
   
     Tablero(Nodo n) {
     this(8, 60);
+    this.mundoNodo = new Nodo("nodo juego",8);
     int i,j;
      for(i=0;i<8;i++)
      {
         for(j=0;j<8;j++)
         {
           this.mundo[i][j] = n.estado[i][j];
+          this.mundoNodo.estado[i][j] = n.estado[i][j];
+          
         }
      }
   }

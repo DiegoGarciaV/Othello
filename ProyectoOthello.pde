@@ -4,12 +4,15 @@
  */
 
 Tablero tablero;
+Jugador jugador;
+int ContadorTiempo = 0;
 
 /**
  * Método para establecet tamaño de ventana al incluir variables
  */
 void settings(){
   tablero =  new Tablero();
+  jugador = new Jugador();
   size(tablero.dimension * tablero.tamCasilla, (tablero.dimension + 3)* tablero.tamCasilla);
 }
 
@@ -26,29 +29,19 @@ void setup(){
  */
 void draw(){
   
+  
+  if(tablero.turno)
+    ContadorTiempo++;
   tablero.display();
   tablero.muestraJugadas();
-  
-}
-
-/**
- * Evento para detectar cuando el usuario da clic
- */
-void mousePressed() {
-  
-  int casillaX,casillaY;
-  casillaX = mouseX/tablero.tamCasilla;
-  casillaY = mouseY/tablero.tamCasilla;
-  
-  
-      
-  if((casillaX < 8 && casillaY < 8) && tablero.esJugable(casillaX,casillaY))
-  {
-      println("\nClic en la casilla " + "[" + casillaX + ", " + casillaY + "]");
-      tablero.setFicha(casillaX,casillaY);
+  if(tablero.turno && !tablero.finPartida() && ContadorTiempo > 150)
+    {
+      PVector jugada = jugador.Jugar(tablero);
+      tablero.setFicha(floor(jugada.x),floor(jugada.y));
+      println("\nPC jugo en  " + "[" + jugada.x + ", " + jugada.y + "]");
       tablero.cambiarTurno();
-      tablero.muestraJugadas();
       tablero.mensaje("Turno " + tablero.numeroDeTurno + "   "  + (tablero.turno ? " jugó ficha blanca" : "jugó ficha negra"));
+      
       
       if(tablero.sinMovimientos())
       {
@@ -65,6 +58,46 @@ void mousePressed() {
        
       }
       
+    }
+  
+}
+
+/**
+ * Evento para detectar cuando el usuario da clic
+ */
+void mousePressed() {
+  
+  int casillaX,casillaY;
+  casillaX = mouseX/tablero.tamCasilla;
+  casillaY = mouseY/tablero.tamCasilla;
+  
+  
+      
+  if((casillaX < 8 && casillaY < 8) && tablero.esJugable(casillaX,casillaY) && !tablero.turno)
+  {
+      println("\nClic en la casilla " + "[" + casillaX + ", " + casillaY + "]");
+      tablero.setFicha(casillaX,casillaY);
+      tablero.cambiarTurno();
+      tablero.mensaje("Turno " + tablero.numeroDeTurno + "   "  + (tablero.turno ? " jugó ficha blanca" : "jugó ficha negra"));
+      
+      
+      if(tablero.sinMovimientos())
+      {
+        
+        if(tablero.finPartida())
+        {
+          tablero.mensajes("Fin de la partida, " + (tablero.cantidadFichas().x > tablero.cantidadFichas().y ? " ganan Negras" : (tablero.cantidadFichas().x < tablero.cantidadFichas().y ? "ganan Blancas" : "empate")),"       Volver a jugar      ");
+          tablero.terminaPartida();
+        }
+        else
+        {
+          tablero.mensajes("Sin jugadas posibles","Turno para el siguiente jugador.");
+        }
+       
+      }
+      tablero.display();
+      tablero.muestraJugadas();
+      ContadorTiempo = 0;
       
       
   }
@@ -75,6 +108,10 @@ void mousePressed() {
   else if(casillaY > 8 && tablero.finJuego)
   {
     tablero.nuevoJuego();
+  }
+  else if(casillaY > 8)
+  {
+      ContadorTiempo = 301;
   }
   
 

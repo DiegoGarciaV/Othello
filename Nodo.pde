@@ -121,7 +121,7 @@ public class Nodo {
         {
             for(j = 0; j  < 8; j++)
             {
-                r = r + (estado[i][j] == 0 ? " - " : estado[i][j] > 0 ? " O " : " X ");
+                r = r + (estado[j][i] == 0 ? " - " : estado[j][i] > 0 ? " O " : " X ");
             }
             r = r + "\n";
         }
