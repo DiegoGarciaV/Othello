@@ -34,7 +34,7 @@ void draw(){
     ContadorTiempo++;
   tablero.display();
   tablero.muestraJugadas();
-  if(tablero.turno && !tablero.finPartida() && ContadorTiempo > 150)
+  if(tablero.turno && !tablero.finPartida())
     {
       PVector jugada = jugador.Jugar(tablero);
       tablero.setFicha(floor(jugada.x),floor(jugada.y));

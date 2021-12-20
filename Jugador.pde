@@ -2,7 +2,7 @@ import java.util.LinkedList;
 
 class Jugador {
    
-   int profundidad   = 7;
+   int profundidad   = 13;
    char cJugador     = 'N';
    char cOponente    = 'B';
    
@@ -31,22 +31,40 @@ class Jugador {
      {
        for(Nodo h : hijos)
        {
-        
-         int hr = heuristica(h);
-         a =  100000;
-         b = -100000;
-         int mx = minimax(h,cOponente,0);
-         r = mx + hr;
-         println(h.imprimeEstado() + " " + mx + " + " + hr + " = " + r);
-         if(r > maxR)
+         
+         a =  -100000;
+         b = 100000;
+         r= minimax(h,cOponente,0,a,b);
+         println(h.imprimeEstado() + " " + r);
+         if(r >= maxR)
          {
-            maxR = r;
-            maxNodo = h;
+           if(r == maxR)
+           {
+             if(heuristica(h) > heuristica(maxNodo))
+             {
+               maxR = r;
+               maxNodo = h;
+             }
+           }
+           else
+           {
+             maxR = r;
+             maxNodo = h;
+           }
+               
          }
        }
      }
      else
-       maxNodo = hijos.getFirst();
+     {
+       Nodo h = hijos.getFirst();
+       println(h.imprimeEstado());
+       if(nodoTerminal(h))
+         println(evalFunc(h));
+       else
+         println(heuristica(h));
+       maxNodo = h;
+     }
        
      println("Mejor jugada: \n" + maxNodo.imprimeEstado() + " " + maxR);
      
@@ -137,7 +155,7 @@ class Jugador {
       m = floor(tbl.jugadasPosibles()[0].x);
       p = floor(tbl.cantidadFichas().x - tbl.cantidadFichas().y);
       
-      return (64*E + 8*X + 16*C + 4*H1 + 2*H2 + m + p);
+      return (128*E + 32*X + 16*C + 4*H1 + 2*H2 + m + p);
             
     }
     
@@ -153,13 +171,14 @@ class Jugador {
         {
           Tablero tbl = new Tablero(n);
           int E = n.estado[0][0] + n.estado[0][7] + n.estado[7][0] + n.estado[7][7];
-          int p = 100*floor(tbl.cantidadFichas().x - tbl.cantidadFichas().y + 16*E);
+          int p = 100*floor(tbl.cantidadFichas().x - tbl.cantidadFichas().y + 32*E);
           return p;
         }
     }
    
-   int minimax(Nodo n, char turno, int profund)
+   int minimax(Nodo n, char turno, int profund, int alfa, int beta)
    {
+     int alfaM = alfa,betaM = beta;
      
      if(profund >= this.profundidad || nodoTerminal(n))
         {
@@ -175,18 +194,24 @@ class Jugador {
           hijos.add(n);
           
         }
-        int minimo = minimax(hijos.getFirst(), (turno == cJugador ? cOponente : cJugador),profund + 1);;
+        int minimo =  minimax(hijos.get(0), (turno == cJugador ? cOponente : cJugador),profund + 1,alfaM,betaM);
         int maximo = minimo;
         for(Nodo h : hijos)
         {
             int r = 0;
 
-            r = minimax(h, (turno == cJugador ? cOponente : cJugador),profund + 1);
+            r = minimax(h, (turno == cJugador ? cOponente : cJugador),profund + 1,alfaM,betaM);
 
             if(r < minimo)
                 minimo = r;
             if(r> maximo)
                 maximo = r;
+                
+            alfaM = maximo;
+            betaM = minimo;
+            
+            if(alfaM >= betaM)
+              break;
         }
         return (turno == cJugador ? maximo : minimo);
    }

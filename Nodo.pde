@@ -3,6 +3,8 @@ public class Nodo {
     
     String nombre;
     int estado[][];
+    
+    int alfa, beta; 
     LinkedList<NodoPeso> vecinos = new LinkedList<NodoPeso>();
     
     Nodo(String data)
