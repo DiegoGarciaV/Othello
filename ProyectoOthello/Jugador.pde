@@ -4,7 +4,7 @@ class Jugador {
    
    int bifurcacion[] = new int[64]; 
    int fichas[] = new int[64]; 
-   int profundidad   = 5;
+   int profundidad   = 6;
    char cJugador     = 'N';
    char cOponente    = 'B';
    
@@ -162,7 +162,7 @@ class Jugador {
       m = floor(tbl.jugadasPosibles()[0].x);
       p = floor(tbl.cantidadFichas().x - tbl.cantidadFichas().y);
       
-      return (64*E + 16*X + 16*C + 4*H1 + 2*H2 + p - 0*m);
+      return (64*E + 16*X + 16*C + 4*H1 + 16*H2 + p - 0*m);
             
     }
     
