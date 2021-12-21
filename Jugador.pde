@@ -2,7 +2,9 @@ import java.util.LinkedList;
 
 class Jugador {
    
-   int profundidad   = 13;
+   int bifurcacion[] = new int[64]; 
+   int fichas[] = new int[64]; 
+   int profundidad   = 5;
    char cJugador     = 'N';
    char cOponente    = 'B';
    
@@ -23,10 +25,12 @@ class Jugador {
      println("Nodo actual: \n" + actual.imprimeEstado());
      println("Nodos hijo: \n");
      LinkedList<Nodo> hijos;
-     hijos = generaHijos(actual);
+     hijos = generaHijos(actual,true);
      
-     int maxR = -1000000,r;
+     int maxR = -100000000,r;
      Nodo maxNodo = new Nodo("jugada", 8);
+     bifurcacion[tbl.numeroDeTurno] = hijos.size();
+     fichas[tbl.numeroDeTurno] = floor(tbl.cantidadFichas().x);
      if(hijos.size() > 1)
      {
        for(Nodo h : hijos)
@@ -34,13 +38,14 @@ class Jugador {
          
          a =  -100000;
          b = 100000;
-         r= minimax(h,cOponente,0,a,b);
-         println(h.imprimeEstado() + " " + r);
+         int hr = heuristica(h);
+         r= minimax(h,false,0,a,b);
+         println(h.imprimeEstado() + " " + r + ", " + hr);
          if(r >= maxR)
          {
            if(r == maxR)
            {
-             if(heuristica(h) > heuristica(maxNodo))
+             if(hr > heuristica(maxNodo))
              {
                maxR = r;
                maxNodo = h;
@@ -58,15 +63,15 @@ class Jugador {
      else
      {
        Nodo h = hijos.getFirst();
-       println(h.imprimeEstado());
+       /*println(h.imprimeEstado());
        if(nodoTerminal(h))
          println(evalFunc(h));
        else
-         println(heuristica(h));
+         println(heuristica(h));*/
        maxNodo = h;
      }
        
-     println("Mejor jugada: \n" + maxNodo.imprimeEstado() + " " + maxR);
+     println("Mejor jugada: \n" + maxNodo.imprimeEstado() + " " + maxR + ", " + heuristica(maxNodo));
      
      int i,j;
      for(i = 0; i< 8; i++)
@@ -85,11 +90,12 @@ class Jugador {
    }
    
    
-   LinkedList<Nodo> generaHijos(Nodo n)
+   LinkedList<Nodo> generaHijos(Nodo n,boolean turno)
    {
      LinkedList<Nodo> hijos = new LinkedList<Nodo>();
      
      Tablero tbl = new Tablero(n);
+     tbl.turno = turno;
      
      PVector[] jugadas = tbl.jugadasPosibles();
      int total = floor(jugadas[0].x);
@@ -97,6 +103,7 @@ class Jugador {
      {
        Nodo nNodo = new Nodo("Nodo" + i,8);
        Tablero tbl2 = new Tablero(n);
+       tbl2.turno = turno;
        
        tbl2.setFicha(floor(jugadas[i].x),floor(jugadas[i].y));
        
@@ -127,11 +134,11 @@ class Jugador {
     {
       int E,X,C,H1,H2,m,p;
       E = n.estado[0][0] + n.estado[0][7] + n.estado[7][0] + n.estado[7][7];
-      X = 2*E + 2*n.estado[0][2] + 2*n.estado[0][5] + 2*n.estado[2][0] + n.estado[2][2] + n.estado[2][5] + 2*n.estado[0][7] + 2*n.estado[7][2] + 2*n.estado[7][5] + 2*n.estado[5][0] + n.estado[5][2] + n.estado[5][5] + 2*n.estado[5][7];
-      C = (n.estado[0][0] == 0 ? -1 : 1)*(n.estado[0][1] + n.estado[1][1] + n.estado[1][0]);
-      C = C + (n.estado[0][7] == 0 ? -1 : 1)*(n.estado[0][6] + n.estado[1][6] + n.estado[1][7]);
-      C = C + (n.estado[7][0] == 0 ? -1 : 1)*(n.estado[6][0] + n.estado[6][1] + n.estado[7][1]);
-      C = C + (n.estado[7][7] == 0 ? -1 : 1)*(n.estado[7][6] + n.estado[6][6] + n.estado[6][7]);
+      X = E + n.estado[0][2] + n.estado[0][5] + n.estado[2][0] + n.estado[2][2] + n.estado[2][5] + n.estado[0][7] + n.estado[7][2] + n.estado[7][5] + n.estado[5][0] + n.estado[5][2] + n.estado[5][5] + n.estado[5][7];
+      C = (n.estado[0][0] == 0 ? -4 : 1)*(n.estado[0][1] + n.estado[1][1] + n.estado[1][0]);
+      C = C + (n.estado[0][7] == 0 ? -4 : 1)*(n.estado[0][6] + n.estado[1][6] + n.estado[1][7]);
+      C = C + (n.estado[7][0] == 0 ? -4 : 1)*(n.estado[6][0] + n.estado[6][1] + n.estado[7][1]);
+      C = C + (n.estado[7][7] == 0 ? -4 : 1)*(n.estado[7][6] + n.estado[6][6] + n.estado[6][7]);
       
       int i;
       int hs = 0,hiz = 0,hd = 0,hi= 0;
@@ -155,7 +162,7 @@ class Jugador {
       m = floor(tbl.jugadasPosibles()[0].x);
       p = floor(tbl.cantidadFichas().x - tbl.cantidadFichas().y);
       
-      return (128*E + 32*X + 16*C + 4*H1 + 2*H2 + m + p);
+      return (64*E + 16*X + 16*C + 4*H1 + 2*H2 + p - 0*m);
             
     }
     
@@ -171,50 +178,63 @@ class Jugador {
         {
           Tablero tbl = new Tablero(n);
           int E = n.estado[0][0] + n.estado[0][7] + n.estado[7][0] + n.estado[7][7];
-          int p = 100*floor(tbl.cantidadFichas().x - tbl.cantidadFichas().y + 32*E);
+          int p = 10*floor(tbl.cantidadFichas().x - tbl.cantidadFichas().y + 32*E);
+          p = floor(tbl.cantidadFichas().x - tbl.cantidadFichas().y)*100000;
           return p;
         }
     }
    
-   int minimax(Nodo n, char turno, int profund, int alfa, int beta)
+   int minimax(Nodo n, boolean turno, int profund, int alfa, int beta)
    {
      int alfaM = alfa,betaM = beta;
      
      if(profund >= this.profundidad || nodoTerminal(n))
         {
-            return evalFunc(n);
+            int r = evalFunc(n);
+            //println("Nivel " + profund + ", turno de " + (turno ? 'O' : 'X') + "\n" + n.imprimeEstado() + " " + r);
+            return r;
         }
         
         LinkedList<Nodo> hijos = new LinkedList<Nodo>();
 
-        hijos = generaHijos(n);
+        hijos = generaHijos(n,turno);
         
         if(hijos.size() == 0)
         {
           hijos.add(n);
           
         }
-        int minimo =  minimax(hijos.get(0), (turno == cJugador ? cOponente : cJugador),profund + 1,alfaM,betaM);
-        int maximo = minimo;
+        int minimo =  100000000;
+        int maximo = -minimo;
         for(Nodo h : hijos)
         {
             int r = 0;
-
-            r = minimax(h, (turno == cJugador ? cOponente : cJugador),profund + 1,alfaM,betaM);
+  
+            r = minimax(h, !turno,profund + 1,alfaM,betaM);
+            //println("Nivel " + profund + ", turno de " + (turno ? 'O' : 'X') + "\n" + h.imprimeEstado() + " " + r);
 
             if(r < minimo)
                 minimo = r;
             if(r> maximo)
                 maximo = r;
                 
-            alfaM = maximo;
-            betaM = minimo;
-            
+            if(turno)
+            {
+              alfaM = maximo;
+            }
+            else
+            {
+              betaM = minimo;
+            }
             if(alfaM >= betaM)
+            {
               break;
+            }
+            
         }
-        return (turno == cJugador ? maximo : minimo);
+        return (turno ? maximo : minimo);
    }
+
    
    
  }

@@ -1,7 +1,6 @@
 import java.util.LinkedList;
 
 public class Grafo
-
 {
     LinkedList<Nodo> nodos = new LinkedList<Nodo>();
 

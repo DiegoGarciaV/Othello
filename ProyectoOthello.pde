@@ -5,7 +5,7 @@
 
 Tablero tablero;
 Jugador jugador;
-int ContadorTiempo = 0;
+int ContadorTiempo = 250;
 
 /**
  * Método para establecet tamaño de ventana al incluir variables
@@ -34,13 +34,18 @@ void draw(){
     ContadorTiempo++;
   tablero.display();
   tablero.muestraJugadas();
-  if(tablero.turno && !tablero.finPartida())
+  if(tablero.turno && !tablero.finPartida() && ContadorTiempo > 250)
     {
       PVector jugada = jugador.Jugar(tablero);
-      tablero.setFicha(floor(jugada.x),floor(jugada.y));
-      println("\nPC jugo en  " + "[" + jugada.x + ", " + jugada.y + "]");
-      tablero.cambiarTurno();
-      tablero.mensaje("Turno " + tablero.numeroDeTurno + "   "  + (tablero.turno ? " jugó ficha blanca" : "jugó ficha negra"));
+      if(tablero.esJugable(floor(jugada.x),floor(jugada.y)))
+      {
+        tablero.setFicha(floor(jugada.x),floor(jugada.y));
+        println("\nPC jugo en  " + "[" + jugada.x + ", " + jugada.y + "]");
+        tablero.cambiarTurno();
+        tablero.mensaje("Turno " + tablero.numeroDeTurno + "   "  + (tablero.turno ? " jugó ficha blanca" : "jugó ficha negra"));
+        ContadorTiempo = 0;
+      }
+
       
       
       if(tablero.sinMovimientos())
@@ -49,6 +54,11 @@ void draw(){
         if(tablero.finPartida())
         {
           tablero.mensajes("Fin de la partida, " + (tablero.cantidadFichas().x > tablero.cantidadFichas().y ? " ganan Negras" : (tablero.cantidadFichas().x < tablero.cantidadFichas().y ? "ganan Blancas" : "empate")),"       Volver a jugar      ");
+          int i = 0;
+          for(i=0;i < tablero.numeroDeTurno-1;i++)
+          {
+            println(jugador.bifurcacion[i] + "," + jugador.fichas[i]);
+          }
           tablero.terminaPartida();
         }
         else
@@ -76,6 +86,9 @@ void mousePressed() {
   if((casillaX < 8 && casillaY < 8) && tablero.esJugable(casillaX,casillaY) && !tablero.turno)
   {
       println("\nClic en la casilla " + "[" + casillaX + ", " + casillaY + "]");
+      
+      jugador.bifurcacion[tablero.numeroDeTurno] = floor(tablero.jugadasPosibles()[0].x);
+      jugador.fichas[tablero.numeroDeTurno] = floor(tablero.cantidadFichas().x);
       tablero.setFicha(casillaX,casillaY);
       tablero.cambiarTurno();
       tablero.mensaje("Turno " + tablero.numeroDeTurno + "   "  + (tablero.turno ? " jugó ficha blanca" : "jugó ficha negra"));
@@ -87,6 +100,12 @@ void mousePressed() {
         if(tablero.finPartida())
         {
           tablero.mensajes("Fin de la partida, " + (tablero.cantidadFichas().x > tablero.cantidadFichas().y ? " ganan Negras" : (tablero.cantidadFichas().x < tablero.cantidadFichas().y ? "ganan Blancas" : "empate")),"       Volver a jugar      ");
+          
+          int i = 0;
+          for(i=0;i < tablero.numeroDeTurno-1;i++)
+          {
+            println(jugador.bifurcacion[i] + "," + jugador.fichas[i]);
+          }
           tablero.terminaPartida();
         }
         else
@@ -97,7 +116,7 @@ void mousePressed() {
       }
       tablero.display();
       tablero.muestraJugadas();
-      ContadorTiempo = 0;
+      ContadorTiempo = 250;
       
       
   }
@@ -113,7 +132,5 @@ void mousePressed() {
   {
       ContadorTiempo = 301;
   }
-  
-
     
 }
