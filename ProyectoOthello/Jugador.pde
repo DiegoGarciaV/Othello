@@ -38,14 +38,14 @@ class Jugador {
          
          a =  -100000;
          b = 100000;
-         int hr = heuristica(h);
+         int hr = heuristica(h,false);
          r= minimax(h,false,0,a,b);
          println(h.imprimeEstado() + " " + r + ", " + hr);
          if(r >= maxR)
          {
            if(r == maxR)
            {
-             if(hr > heuristica(maxNodo))
+             if(hr > heuristica(maxNodo,false))
              {
                maxR = r;
                maxNodo = h;
@@ -69,9 +69,10 @@ class Jugador {
        else
          println(heuristica(h));*/
        maxNodo = h;
+       maxR = 0;
      }
        
-     println("Mejor jugada: \n" + maxNodo.imprimeEstado() + " " + maxR + ", " + heuristica(maxNodo));
+     println("Mejor jugada: \n" + maxNodo.imprimeEstado() + " " + maxR + ", " + heuristica(maxNodo,false));
      
      int i,j;
      for(i = 0; i< 8; i++)
@@ -130,7 +131,7 @@ class Jugador {
    }
     
     
-    int heuristica(Nodo n)
+    int heuristica(Nodo n, boolean turno)
     {
       int E,X,C,H1,H2,m,p;
       E = n.estado[0][0] + n.estado[0][7] + n.estado[7][0] + n.estado[7][7];
@@ -159,19 +160,20 @@ class Jugador {
       H1 = floor(hs/8) + floor(hi/8) + floor(hiz/8) + floor(hd/8);
       
       Tablero tbl = new Tablero(n);
+      tbl.turno = turno;
       m = floor(tbl.jugadasPosibles()[0].x);
       p = floor(tbl.cantidadFichas().x - tbl.cantidadFichas().y);
       
-      return (64*E + 16*X + 16*C + 4*H1 + 16*H2 + p - 0*m);
+      return (64*E + 16*X + 16*C + 4*H1 + 16*H2 + p - 4*m);
             
     }
     
-    int evalFunc(Nodo n)
+    int evalFunc(Nodo n, boolean turno)
     {
         if(!nodoTerminal(n))
         {
             //Si no es nodo terminal retorna el valor de la heuristica
-            return heuristica(n);
+            return heuristica(n, turno);
             
         }
         else
@@ -190,7 +192,7 @@ class Jugador {
      
      if(profund >= this.profundidad || nodoTerminal(n))
         {
-            int r = evalFunc(n);
+            int r = evalFunc(n, turno);
             //println("Nivel " + profund + ", turno de " + (turno ? 'O' : 'X') + "\n" + n.imprimeEstado() + " " + r);
             return r;
         }
