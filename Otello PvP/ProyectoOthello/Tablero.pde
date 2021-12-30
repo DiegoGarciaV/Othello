@@ -121,6 +121,51 @@ class Tablero {
       mensaje = s;
       mensaje2 = t;
   }
+  
+  int heuristica()
+  {
+    int E,X,C,H1,H2,m,p;
+    int mundoH[][] = new int[8][8];
+    for(int i = 0; i < 8; i++)
+    {
+      for(int j = 0; j < 8; j++)  
+      {
+         mundoH[i][j] = (mundo[i][j] == 1 ? 1 : (mundo[i][j] == 2 ? -1 : 0)); 
+      }
+    }
+      E = mundoH[0][0] + mundoH[0][7] + mundoH[7][0] + mundoH[7][7];
+      X = E + mundoH[0][2] + mundoH[0][5] + mundoH[2][0] + mundoH[2][2] + mundoH[2][5] + mundoH[0][7] + mundoH[7][2] + mundoH[7][5] + mundoH[5][0] + mundoH[5][2] + mundoH[5][5] + mundoH[5][7];
+      C = (mundoH[0][0] == 0 ? -4 : 1)*(mundoH[0][1] + mundoH[1][1] + mundoH[1][0]);
+      C = C + (mundoH[0][7] == 0 ? -4 : 1)*(mundoH[0][6] + mundoH[1][6] + mundoH[1][7]);
+      C = C + (mundoH[7][0] == 0 ? -4 : 1)*(mundoH[6][0] + mundoH[6][1] + mundoH[7][1]);
+      C = C + (mundoH[7][7] == 0 ? -4 : 1)*(mundoH[7][6] + mundoH[6][6] + mundoH[6][7]);
+      
+      int i;
+      int hs = 0,hiz = 0,hd = 0,hi= 0;
+      for(i=1;i<7;i++)
+      {
+        hs += mundoH[i][0];
+        hi += mundoH[i][7];
+        hiz += mundoH[0][i];
+        hd += mundoH[7][i];
+      }
+      
+      H2 = floor(hs/6) + floor(hi/6) + floor(hiz/6) + floor(hd/6);
+      hs +=  mundoH[0][0] + mundoH[7][0];
+      hi +=  mundoH[0][7] + mundoH[7][7];
+      hiz += mundoH[0][0] + mundoH[0][7];
+      hd +=  mundoH[7][0] + mundoH[7][7];
+      
+      H1 = floor(hs/8) + floor(hi/8) + floor(hiz/8) + floor(hd/8);
+      
+      
+      m = floor(jugadasPosibles()[0].x - 1);
+      p = floor(cantidadFichas().x - cantidadFichas().y);
+      println(p + " " + m);
+      
+      return (64*E + 16*X + 16*C + 4*H1 + 16*H2 + p - 4*m);
+    
+  }
 
   /**
    * Coloca o establece una ficha en una casilla específica del tablero.
@@ -221,6 +266,18 @@ class Tablero {
     return 0;
   }
   
+  boolean jugadaConsiderada(PVector[] J, PVector j,int p)
+  {
+    int i = 0;
+    for(i  = 1; i < p; i++)
+    {
+      if(J[i].x == j.x && J[i].y == j.y)
+        return true;
+    }
+    return false;
+  }
+    
+    
   PVector[] jugadasPosibles()
   {
       PVector jugadas[] = new PVector[60];
@@ -251,7 +308,7 @@ class Tablero {
                   if(h == 0 && k == 0)
                       continue;
                   
-                  if(encierraEnemigo(i,j,h,k) > 0)
+                  if(encierraEnemigo(i,j,h,k) > 0 && !jugadaConsiderada(jugadas,new PVector(i,j),p))
                   {
                     jugadas[p] = new PVector();
                     jugadas[p].x = i;

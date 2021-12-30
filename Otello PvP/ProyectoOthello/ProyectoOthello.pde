@@ -46,6 +46,7 @@ void mousePressed() {
       println("\nClic en la casilla " + "[" + casillaX + ", " + casillaY + "]");
       tablero.setFicha(casillaX,casillaY);
       tablero.cambiarTurno();
+      println("H = " + tablero.heuristica());
       tablero.muestraJugadas();
       tablero.mensaje("Turno " + tablero.numeroDeTurno + "   "  + (tablero.turno ? " jugó ficha blanca" : "jugó ficha negra"));
       
