@@ -33,10 +33,15 @@ class Tablero {
    */
   int numeroDeTurno;
   
+  // Cantidad de posibles movimientos en el turno actual
   int juegosPosibles = 4;
   
+  
+  //Cadenas de texto que se muestran en la parte inferior del tablero
   String mensaje = "";
   String mensaje2 = "";
+  
+  //Bandera de juego terminado
   boolean finJuego = false;
 
   /**
@@ -74,6 +79,7 @@ class Tablero {
     this(8, 60);
     this.mundoNodo = new Nodo("nodo juego",8);
     int i,j;
+    //Volcamos la información del nodo al mundo del tablero.
      for(i=0;i<8;i++)
      {
         for(j=0;j<8;j++)
@@ -114,6 +120,7 @@ class Tablero {
         }
       }
       
+      //Mostrar consola de datos en la parte inferior del tablero
       fill(fondo);
       rect(0, dimension*tamCasilla, dimension*tamCasilla, 3*tamCasilla);
       textSize(tamCasilla/2);
@@ -131,6 +138,7 @@ class Tablero {
   }
   
   
+  //Escribir mensajes en la consola del juego
   void mensaje(String s)
   {
       mensaje = s;
@@ -164,6 +172,12 @@ class Tablero {
     return (mundo[posX][posY] != 0);
   }
   
+    /**
+   * Verifica si en la posición de una casilla dada se puede hacer un movimiento legal 
+   * @param posX Coordenada horizontal de la casilla a verificar
+   * @param posY Coordenada vertical de la casilla a verificar
+   * @return True si es un movimiento legal, false en otro caso
+   */
   boolean esJugable(int posX, int posY) {
     
     //buscar en la lista de jugadas
@@ -242,6 +256,14 @@ class Tablero {
   }
 
   
+   /**
+   * Verifica si en la posición de una casilla dada encierra a alguna hilera del oponente en una dirección dada
+   * @param posX Coordenada horizontal de la casilla a verificar
+   * @param posY Coordenada vertical de la casilla a verificar
+   * @param dx dirección horizontal de busqueda
+   * @param dy dirección vertical de busqueda
+   * @return Cantidad de fichas encerradas
+   */
   int encierraEnemigo(int posX, int posY, int dx, int dy)
   {
     int d = 1;
@@ -257,6 +279,15 @@ class Tablero {
     return 0;
   }
   
+  
+   /**
+   * Verifica si un movimiento legar ya se ha considerado y agregado a la lista de movimientos legales
+   * @param J Lista de movimientos legales
+   * @param j jugada por verificar
+   * @param p cantidad de jugadas posibles
+   * @return True si ya se consideró esa jugada
+   */
+   
   boolean jugadaConsiderada(PVector[] J, PVector j,int p)
   {
     int i = 0;
@@ -268,6 +299,13 @@ class Tablero {
     return false;
   }
   
+  
+  
+  /**
+   * Función que devuelve una lista de todas las jugadas posibles dado el turno actual
+   * @return Lista de jugadas posibles
+   */
+   
   PVector[] jugadasPosibles()
   {
       PVector jugadas[] = new PVector[60];
@@ -307,7 +345,7 @@ class Tablero {
       return jugadas;
   }
   
-  
+  //Método que imprime las ubicaciones de las jugadas posibles del turno actual
   void muestraJugadas()
   {
     PVector jugadas[] = jugadasPosibles();
@@ -324,7 +362,11 @@ class Tablero {
     }
   }
   
-  
+  /**
+   * Verifica si el jugador el turno actual tiene movmientos legales posibles
+   * @return True si no iene movimientos, False en otro caso
+   */
+   
   boolean sinMovimientos()
   {
     if(jugadasPosibles()[0].x == 1)
@@ -334,6 +376,11 @@ class Tablero {
     return false;
   }
   
+   /**
+   * Verifica si ambos jugadores tienen movimientos posibles y la partida puede continuar
+   * @return True si la partida ha concluido, false en otro caso
+   */
+   
   boolean finPartida()
   {
     if(sinMovimientos())
@@ -352,7 +399,7 @@ class Tablero {
     
   }
   
-  
+  //Método que coloca el tablero en el estado inicial de un partidas
   void nuevoJuego()
   {
     

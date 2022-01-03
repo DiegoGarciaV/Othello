@@ -5,7 +5,7 @@
 
 Tablero tablero;
 Jugador jugador;
-int ContadorTiempo = 250;
+int ContadorTiempo = 150;
 
 /**
  * Método para establecet tamaño de ventana al incluir variables
@@ -34,7 +34,7 @@ void draw(){
     ContadorTiempo++;
   tablero.display();
   tablero.muestraJugadas();
-  if(tablero.turno && !tablero.finPartida() && ContadorTiempo > 250)
+  if(tablero.turno && !tablero.finPartida() && ContadorTiempo > 150)
     {
       PVector jugada = jugador.Jugar(tablero);
       if(tablero.esJugable(floor(jugada.x),floor(jugada.y)))
@@ -116,7 +116,7 @@ void mousePressed() {
       }
       tablero.display();
       tablero.muestraJugadas();
-      ContadorTiempo = 250;
+      ContadorTiempo = 150;
       
       
   }
@@ -130,7 +130,7 @@ void mousePressed() {
   }
   else if(casillaY > 8)
   {
-      ContadorTiempo = 301;
+      ContadorTiempo = 151;
   }
     
 }
