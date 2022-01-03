@@ -3,7 +3,9 @@ import java.util.LinkedList;
 class Jugador {
    
    int bifurcacion[] = new int[64]; 
+   int explorados[]  = new int[64];
    int fichas[] = new int[64]; 
+   int exploraciones;
    int profundidad   = 6;
   
    void setDificultad(int d)
@@ -15,11 +17,12 @@ class Jugador {
    {
      PVector jugada = new PVector(0,0);
      Nodo actual = tbl.mundoNodo;
-     
+     exploraciones = 0;
      println("Nodo actual: \n" + actual.imprimeEstado());
      println("Nodos hijo: \n");
      actual.vecinos = new LinkedList();
      generaHijos(actual,true);
+     exploraciones += actual.vecinos.size();
      
      int maxR = -100000000,r;
      Nodo maxNodo = new Nodo("jugada", 8);
@@ -35,6 +38,7 @@ class Jugador {
          int b = 100000;
          int hr = heuristica(h,false);
          r= minimax(h,false,0,a,b);
+         explorados[tbl.numeroDeTurno] = exploraciones;
          println(h.imprimeEstado() + " " + r + ", " + hr);
          if(r >= maxR)
          {
@@ -196,12 +200,11 @@ class Jugador {
         LinkedList<Nodo> hijos = new LinkedList<Nodo>();
 
         hijos = generaHijos(n,turno);
-        
         if(hijos.size() == 0)
         {
           hijos.add(n);
-          
         }
+        exploraciones += hijos.size();
         int minimo =  100000000;
         int maximo = -minimo;
         for(Nodo h : hijos)
@@ -223,11 +226,11 @@ class Jugador {
             else
             {
               betaM = minimo;
-            }
+            }/*
             if(alfaM >= betaM)
             {
               break;
-            }
+            }*/
             
         }
         return (turno ? maximo : minimo);

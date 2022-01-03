@@ -104,7 +104,7 @@ void mousePressed() {
           int i = 0;
           for(i=0;i < tablero.numeroDeTurno-1;i++)
           {
-            println(jugador.bifurcacion[i] + "," + jugador.fichas[i]);
+            println(jugador.bifurcacion[i] + "," + jugador.fichas[i] + ", " + jugador.explorados[i]);
           }
           tablero.terminaPartida();
         }
