@@ -5,13 +5,7 @@ class Jugador {
    int bifurcacion[] = new int[64]; 
    int fichas[] = new int[64]; 
    int profundidad   = 6;
-   char cJugador     = 'N';
-   char cOponente    = 'B';
-   
-   int a,b;
-   
-   Grafo busqueda = new Grafo();
-   
+  
    void setDificultad(int d)
    {
      this.profundidad = min(d,10);
@@ -24,20 +18,21 @@ class Jugador {
      
      println("Nodo actual: \n" + actual.imprimeEstado());
      println("Nodos hijo: \n");
-     LinkedList<Nodo> hijos;
-     hijos = generaHijos(actual,true);
+     actual.vecinos = new LinkedList();
+     generaHijos(actual,true);
      
      int maxR = -100000000,r;
      Nodo maxNodo = new Nodo("jugada", 8);
-     bifurcacion[tbl.numeroDeTurno] = hijos.size();
+     bifurcacion[tbl.numeroDeTurno] = actual.vecinos.size();
      fichas[tbl.numeroDeTurno] = floor(tbl.cantidadFichas().x);
-     if(hijos.size() > 1)
+     println("Totales: " + actual.vecinos.size());
+     if(actual.vecinos.size() > 1)
      {
-       for(Nodo h : hijos)
+       for(NodoPeso hp : actual.vecinos)
        {
-         
-         a =  -100000;
-         b = 100000;
+         Nodo h = hp.nNodo;
+         int a =  -100000;
+         int b = 100000;
          int hr = heuristica(h,false);
          r= minimax(h,false,0,a,b);
          println(h.imprimeEstado() + " " + r + ", " + hr);
@@ -62,7 +57,7 @@ class Jugador {
      }
      else
      {
-       Nodo h = hijos.getFirst();
+       Nodo h = actual.vecinos.getFirst().nNodo;
        /*println(h.imprimeEstado());
        if(nodoTerminal(h))
          println(evalFunc(h));
@@ -117,6 +112,7 @@ class Jugador {
          }
        }
        hijos.addLast(nNodo);
+       n.agregaVecino(nNodo);
      }
      
      return hijos;
