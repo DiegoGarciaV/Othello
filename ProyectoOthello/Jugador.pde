@@ -6,11 +6,11 @@ class Jugador {
    int explorados[]  = new int[64];
    int fichas[] = new int[64]; 
    int exploraciones;
-   int profundidad   = 4;
+   int profundidad   = 3;
   
    void setDificultad(int d)
    {
-     this.profundidad = min(d,10);
+     this.profundidad = min(d,6);
    }
    
    PVector Jugar(Tablero tbl)

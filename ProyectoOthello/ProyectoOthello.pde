@@ -13,7 +13,7 @@ int ContadorTiempo = 150;
 void settings(){
   tablero =  new Tablero();
   jugador = new Jugador();
-  size(tablero.dimension * tablero.tamCasilla, (tablero.dimension + 3)* tablero.tamCasilla);
+  size(tablero.dimension * tablero.tamCasilla, (tablero.dimension + 4)* tablero.tamCasilla);
 }
 
 /**

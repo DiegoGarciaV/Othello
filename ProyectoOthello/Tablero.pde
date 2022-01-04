@@ -28,6 +28,8 @@ class Tablero {
    */
   boolean turno;
   
+  String dificultad = "Fácil";
+  
   /**
    * Contador de la cantidad de turnos en el tablero
    */
@@ -122,19 +124,22 @@ class Tablero {
       
       //Mostrar consola de datos en la parte inferior del tablero
       fill(fondo);
-      rect(0, dimension*tamCasilla, dimension*tamCasilla, 3*tamCasilla);
+      rect(0, dimension*tamCasilla, dimension*tamCasilla, 4*tamCasilla);
       textSize(tamCasilla/2);
       fill(255);
-      text("Turno: ",tamCasilla/4,(dimension+0.65)*tamCasilla);
+      text("Dificultad: " + dificultad,tamCasilla/4,(dimension+0.85)*tamCasilla);
+      text(" + ",tamCasilla*(5),(dimension+0.85)*tamCasilla);
+      text(" - ",tamCasilla*(6),(dimension+0.85)*tamCasilla);
+      text("Turno: ",tamCasilla/4,(dimension+1.85)*tamCasilla);
       fill(turno ? jugador1 :  jugador2);
       noStroke();
-      ellipse(tamCasilla*dimension/3, (dimension+0.55)*tamCasilla, tamCasilla*3/5, tamCasilla*3/5);
+      ellipse(tamCasilla*dimension/3, (dimension+1.75)*tamCasilla, tamCasilla*3/5, tamCasilla*3/5);
       fill(255);
-      text("Score: " + int(tablero.cantidadFichas().x) + " - " + int(tablero.cantidadFichas().y),(dimension/2 + 0.25)*tamCasilla,(dimension+0.65)*tamCasilla);
+      text("Score: " + int(tablero.cantidadFichas().x) + " - " + int(tablero.cantidadFichas().y),(dimension/2 + 0.25)*tamCasilla,(dimension+1.85)*tamCasilla);
       
       
-      text(mensaje,tamCasilla/4,(dimension+1.65)*tamCasilla);
-      text(mensaje2,tamCasilla/4,(dimension+2.65)*tamCasilla);
+      text(mensaje,tamCasilla/4,(dimension+2.85)*tamCasilla);
+      text(mensaje2,tamCasilla/4,(dimension+3.85)*tamCasilla);
   }
   
   
