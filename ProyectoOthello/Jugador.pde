@@ -6,7 +6,7 @@ class Jugador {
    int explorados[]  = new int[64];
    int fichas[] = new int[64]; 
    int exploraciones;
-   int profundidad   = 3;
+   int profundidad   = 4;
   
    void setDificultad(int d)
    {

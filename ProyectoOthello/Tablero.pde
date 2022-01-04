@@ -28,7 +28,8 @@ class Tablero {
    */
   boolean turno;
   
-  String dificultad = "Fácil";
+  String dificultad[] = new String[5];
+  int dificultadN = 0;
   
   /**
    * Contador de la cantidad de turnos en el tablero
@@ -75,6 +76,12 @@ class Tablero {
    */
   Tablero() {
     this(8, 60);
+    dificultad[0] = "Fácil";
+    dificultad[1] = "Medio";
+    dificultad[2] = "Difícil";
+    dificultad[3] = "Experto";
+    dificultad[4] = "SUPREMO";
+    
   }
   
     Tablero(Nodo n) {
@@ -127,9 +134,9 @@ class Tablero {
       rect(0, dimension*tamCasilla, dimension*tamCasilla, 4*tamCasilla);
       textSize(tamCasilla/2);
       fill(255);
-      text("Dificultad: " + dificultad,tamCasilla/4,(dimension+0.85)*tamCasilla);
-      text(" + ",tamCasilla*(5),(dimension+0.85)*tamCasilla);
-      text(" - ",tamCasilla*(6),(dimension+0.85)*tamCasilla);
+      text("Dificultad: " + dificultad[dificultadN],tamCasilla/4,(dimension+0.85)*tamCasilla);
+      text(" - ",tamCasilla*(5.25),(dimension+0.85)*tamCasilla);
+      text(" + ",tamCasilla*(6.25),(dimension+0.85)*tamCasilla);
       text("Turno: ",tamCasilla/4,(dimension+1.85)*tamCasilla);
       fill(turno ? jugador1 :  jugador2);
       noStroke();

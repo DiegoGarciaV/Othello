@@ -13,6 +13,7 @@ int ContadorTiempo = 150;
 void settings(){
   tablero =  new Tablero();
   jugador = new Jugador();
+  jugador.setDificultad(tablero.dificultadN + 2);
   size(tablero.dimension * tablero.tamCasilla, (tablero.dimension + 4)* tablero.tamCasilla);
 }
 
@@ -123,6 +124,15 @@ void mousePressed() {
   else if((casillaX < 8 && casillaY < 8))
   {
      println("No es posible colocar ficha en la casilla " + "[" + casillaX + ", " + casillaY + "]");
+  }
+  else if(casillaY >= 8 && casillaY < 9 && casillaX > 4)
+  {
+    if(casillaX < 6)
+      tablero.dificultadN = max(0,tablero.dificultadN - 1);
+    else
+      tablero.dificultadN = min(4,tablero.dificultadN + 1);
+      
+      jugador.setDificultad(tablero.dificultadN + 2);
   }
   else if(casillaY > 8 && tablero.finJuego)
   {
